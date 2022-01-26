@@ -25,10 +25,10 @@ func getJsonFieldName(f reflect.StructField) (name string, omitempty bool) {
 	return f.Name, false
 }
 
-func getManyDocumentAndIndexFromData(data interface{}) (index string, docs []map[string]interface{}) {
+func getManyDocumentAndIndexFromData(data interface{}, includeField ...string) (index string, docs []map[string]interface{}) {
 	if reflect.TypeOf(data).Kind() == reflect.Struct {
 		index = GetIndex(data)
-		docs = append(docs, getDocumentFromData(data))
+		docs = append(docs, getDocumentFromData(data, includeField...))
 
 	} else if reflect.TypeOf(data).Kind() == reflect.Slice {
 		s := reflect.ValueOf(data)
@@ -37,24 +37,26 @@ func getManyDocumentAndIndexFromData(data interface{}) (index string, docs []map
 			if index == "" {
 				index = GetIndex(sData)
 			}
-			docs = append(docs, getDocumentFromData(sData))
+			docs = append(docs, getDocumentFromData(sData, includeField...))
 		}
 	}
 	return index, docs
 }
 
-func getDocumentFromData(data interface{}) map[string]interface{} {
+//get doc map from struct
+func getDocumentFromData(data interface{}, includeField ...string) map[string]interface{} {
 	t := reflect.TypeOf(data)
 	v := reflect.ValueOf(data)
 	doc := make(map[string]interface{})
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 		d := v.Field(i)
+		jsonName, _ := getJsonFieldName(f)
+		if d.IsZero() && !hadata.IsInStringSlice(includeField, jsonName) {
+			continue
+		}
 		if _, ok := f.Tag.Lookup("may"); ok {
-			jsonName, omitempty := getJsonFieldName(f)
-			if omitempty && d.IsZero() {
-				continue
-			}
+
 			doc[jsonName] = d.Interface()
 		}
 	}

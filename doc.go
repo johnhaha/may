@@ -11,12 +11,12 @@ func Add(data interface{}) error {
 }
 
 //update data in search, receive struct or slice of struct data
-func Update(data interface{}) error {
+func Update(data interface{}, includeField ...string) error {
 	val, err := cleanPointerData(data)
 	if err != nil {
 		return err
 	}
-	index, docs := getManyDocumentAndIndexFromData(val)
+	index, docs := getManyDocumentAndIndexFromData(val, includeField...)
 	_, err = searchClient.Index(index).UpdateDocuments(docs)
 	return err
 }

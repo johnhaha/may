@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-go get github.com/johnhaha/may@v0.0.2
+go get github.com/johnhaha/may@v0.0.3
 ```
 
 ## Intro

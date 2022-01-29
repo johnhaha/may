@@ -10,7 +10,6 @@ import (
 
 	"github.com/johnhaha/hakit/hadata"
 	"github.com/johnhaha/hakit/hamsg"
-	"github.com/meilisearch/meilisearch-go"
 )
 
 //create index from given struct data
@@ -27,10 +26,7 @@ func CreateIndex(data ...interface{}) error {
 			fmt.Println("can not get primary key for data", name)
 			return err
 		}
-		_, err = searchClient.CreateIndex(&meilisearch.IndexConfig{
-			Uid:        index,
-			PrimaryKey: primaryKey,
-		})
+		_, err = searchClient.CreateIndex(index, primaryKey)
 		if err != nil {
 			fmt.Printf("created index %v failed", hamsg.InRed(name))
 			return err
@@ -38,9 +34,7 @@ func CreateIndex(data ...interface{}) error {
 		searchAbleAttr := GetSearchableAttribute(d)
 		if len(searchAbleAttr) != 0 {
 			attrs := GetRankedSearchableAttribute(searchAbleAttr)
-			searchClient.Index(index).UpdateSettings(&meilisearch.Settings{
-				SearchableAttributes: attrs,
-			})
+			searchClient.Index(index).UpdateSetting(SetSearchableAttribute(attrs))
 		}
 		fmt.Printf("created index %v success", hamsg.InGreen(name))
 	}

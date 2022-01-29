@@ -3,12 +3,12 @@
 ## Install
 
 ```bash
-go get github.com/johnhaha/may@v0.0.3
+go get github.com/johnhaha/may@v0.0.4
 ```
 
 ## Intro
 
-May is a tool for Meilisearch golang SDK
+May is a golang SDK for Meilisearch
 
 ## Usage
 

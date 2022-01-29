@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/johnhaha/hakit/hadata"
-	"github.com/meilisearch/meilisearch-go"
 )
 
 func getIndexName(name string) string {
@@ -92,7 +91,7 @@ func delManyDoc(data interface{}) error {
 		uid[i] = k
 	}
 	index := GetIndex(data)
-	_, err := searchClient.Index(index).DeleteDocuments(uid)
+	err := searchClient.Index(index).DelManyDoc(uid)
 	if err != nil {
 		return err
 	}
@@ -106,7 +105,7 @@ func delDoc(data interface{}) error {
 		return err
 	}
 	index := GetIndex(data)
-	_, err = searchClient.Index(index).DeleteDocument(key)
+	err = searchClient.Index(index).DelDoc(key)
 	if err != nil {
 		return err
 	}
@@ -122,11 +121,11 @@ func cleanPointerData(data interface{}) (interface{}, error) {
 	return data, nil
 }
 
-func decodeSearchRes(res *meilisearch.SearchResponse, data interface{}) error {
-	if res.Hits == nil {
+func decodeManyDoc(doc []Doc, data interface{}) error {
+	if doc == nil {
 		return nil
 	}
-	d, err := json.Marshal(res.Hits)
+	d, err := json.Marshal(doc)
 	if err != nil {
 		return err
 	}

@@ -6,7 +6,7 @@ func Add(data interface{}) error {
 		return err
 	}
 	index, docs := getManyDocumentAndIndexFromData(val)
-	_, err = searchClient.Index(index).AddDocuments(docs)
+	err = searchClient.Index(index).Add(docs)
 	return err
 }
 
@@ -17,15 +17,18 @@ func Update(data interface{}, includeField ...string) error {
 		return err
 	}
 	index, docs := getManyDocumentAndIndexFromData(val, includeField...)
-	_, err = searchClient.Index(index).UpdateDocuments(docs)
+	err = searchClient.Index(index).Update(docs)
 	return err
 }
 
 //get data from search, pass pointer of struct or slice of struct data
 func Get(id string, data interface{}) error {
 	index := GetIndex(data)
-	err := searchClient.Index(index).GetDocument(id, data)
-	return err
+	doc, err := searchClient.Index(index).Doc(id)
+	if err != nil {
+		return err
+	}
+	return doc.Decode(data)
 }
 
 func Del(data interface{}) error {

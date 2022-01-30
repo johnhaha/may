@@ -1,4 +1,4 @@
-package may
+package mayer
 
 import (
 	"time"

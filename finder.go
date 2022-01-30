@@ -1,7 +1,9 @@
 package may
 
+import "github.com/johnhaha/may/mayer"
+
 type Finder struct {
-	Filter
+	mayer.Filter
 }
 
 func NewFinder() *Finder {
@@ -20,20 +22,20 @@ func (f *Finder) SetOffset(o int) *Finder {
 
 func (f *Finder) GetDocuments(data interface{}) error {
 	index := GetIndex(data)
-	doc, err := searchClient.Index(index).Find(SetLimit(f.Limit), SetOffset(f.Offset))
+	doc, err := searchClient.Index(index).Find(mayer.SetLimit(f.Limit), mayer.SetOffset(f.Offset))
 	if err != nil {
 		return err
 	}
-	err = decodeManyDoc(doc, data)
+	err = mayer.DecodeManyDoc(doc, data)
 	return err
 }
 
-func (f *Finder) Search(query string, data interface{}) error {
+func Search(query string, data interface{}, options ...mayer.SearchOption) error {
 	index := GetIndex(data)
-	res, err := searchClient.Index(index).Search(query, SetSearchLimit(f.Limit), SetSearchOffset(f.Offset))
+	res, err := searchClient.Index(index).Search(query, options...)
 	if err != nil {
 		return err
 	}
-	err = decodeManyDoc(res, data)
+	err = mayer.DecodeManyDoc(res, data)
 	return err
 }

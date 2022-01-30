@@ -1,7 +1,6 @@
 package may
 
 import (
-	"encoding/json"
 	"errors"
 	"reflect"
 	"strings"
@@ -119,18 +118,6 @@ func cleanPointerData(data interface{}) (interface{}, error) {
 		return res, err
 	}
 	return data, nil
-}
-
-func decodeManyDoc(doc []Doc, data interface{}) error {
-	if doc == nil {
-		return nil
-	}
-	d, err := json.Marshal(doc)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(d, data)
-	return err
 }
 
 func getSearchTag(f reflect.StructField) []string {

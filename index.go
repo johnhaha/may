@@ -31,11 +31,7 @@ func CreateIndex(data ...interface{}) error {
 			fmt.Printf("created index %v failed", hamsg.InRed(name))
 			return err
 		}
-		searchAbleAttr := GetSearchableAttribute(d)
-		if len(searchAbleAttr) != 0 {
-			attrs := GetRankedSearchableAttribute(searchAbleAttr)
-			searchClient.Index(index).UpdateSetting(SetSearchableAttribute(attrs))
-		}
+		UpdateSetting(d)
 		fmt.Printf("created index %v success", hamsg.InGreen(name))
 	}
 	return nil
@@ -103,21 +99,22 @@ func IsIndexFiled(f reflect.StructField) (index bool, inferIndex bool) {
 	return false, strings.Contains(fName, "id")
 }
 
-func IsSearchFiled(f reflect.StructField) (check bool, name string, rank int) {
+func CheckSearchFiled(f reflect.StructField) (searchable bool, filterable bool, name string, rank int64) {
 	tag := getSearchTag(f)
 	if len(tag) == 0 {
-		return false, "", 0
+		return
 	}
+	name, _ = getJsonFieldName(f)
 	for _, t := range tag {
 		if i, err := strconv.ParseInt(t, 10, 32); err == nil {
-			name, _ = getJsonFieldName(f)
-			if err != nil {
-				return false, "", 0
-			}
-			return true, name, int(i)
+			searchable = true
+			rank = i
+		}
+		if t == "filter" {
+			filterable = true
 		}
 	}
-	return false, "", 0
+	return
 }
 
 func GetPrimaryKeyFieldValue(data interface{}) (string, error) {
@@ -142,19 +139,22 @@ func GetPrimaryKeyFieldValue(data interface{}) (string, error) {
 
 }
 
-func GetSearchableAttribute(data interface{}) []SearchableAttribute {
+func GetSearchAttribute(data interface{}) (searchableAttr []string, filterAttr []string) {
+	var searchableAttrRank []SearchableAttribute
 	t := reflect.TypeOf(data)
-	var attr []SearchableAttribute
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
-		check, name, rank := IsSearchFiled(f)
-		if check {
-			attr = append(attr, SearchableAttribute{
+		searchable, filterable, name, rank := CheckSearchFiled(f)
+		if searchable {
+			searchableAttrRank = append(searchableAttrRank, SearchableAttribute{
 				Name: name,
-				Rank: rank,
+				Rank: int(rank),
 			})
 		}
-
+		if filterable {
+			filterAttr = append(filterAttr, name)
+		}
 	}
-	return attr
+	searchableAttr = GetRankedSearchableAttribute(searchableAttrRank)
+	return
 }

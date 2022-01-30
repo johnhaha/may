@@ -2,3 +2,4 @@ may_test.go
 client_test.go
 tool.sh
 Makefile
+mayer/mayer_test.go

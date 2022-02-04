@@ -50,7 +50,7 @@ func getDocumentFromData(data interface{}, includeField ...string) map[string]in
 		f := t.Field(i)
 		d := v.Field(i)
 		jsonName, _ := getJsonFieldName(f)
-		if d.IsZero() && !hadata.IsInStringSlice(includeField, jsonName) {
+		if d.IsZero() && !hadata.IsInSlice(includeField, jsonName) {
 			continue
 		}
 		if _, ok := f.Tag.Lookup("may"); ok {

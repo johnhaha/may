@@ -41,7 +41,7 @@ func getManyDocumentAndIndexFromData(data interface{}, includeField ...string) (
 	return index, docs
 }
 
-//get doc map from struct
+//get doc map from struct, looking for 'may' tag, empty value will get ignored unless being marked in 'includeField'
 func getDocumentFromData(data interface{}, includeField ...string) map[string]interface{} {
 	t := reflect.TypeOf(data)
 	v := reflect.ValueOf(data)
@@ -54,7 +54,6 @@ func getDocumentFromData(data interface{}, includeField ...string) map[string]in
 			continue
 		}
 		if _, ok := f.Tag.Lookup("may"); ok {
-
 			doc[jsonName] = d.Interface()
 		}
 	}

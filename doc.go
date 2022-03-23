@@ -1,5 +1,6 @@
 package may
 
+//add single doc or many doc in slice, will add data with may tag
 func Add(data interface{}) error {
 	val, err := cleanPointerData(data)
 	if err != nil {
@@ -31,6 +32,7 @@ func Get(id string, data interface{}) error {
 	return doc.Decode(data)
 }
 
+//del doc
 func Del(data interface{}) error {
 	val, err := cleanPointerData(data)
 	if err != nil {

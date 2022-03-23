@@ -29,13 +29,3 @@ func (f *Finder) GetDocuments(data interface{}) error {
 	err = mayer.DecodeManyDoc(doc, data)
 	return err
 }
-
-func Search(query string, data interface{}, options ...mayer.SearchOption) error {
-	index := GetIndex(data)
-	res, err := searchClient.Index(index).Search(query, options...)
-	if err != nil {
-		return err
-	}
-	err = mayer.DecodeManyDoc(res, data)
-	return err
-}

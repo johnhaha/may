@@ -19,6 +19,7 @@ func CreateIndex(data ...interface{}) error {
 		index := getIndexName(name)
 		if check, _ := IndexExist(d); check {
 			fmt.Printf("index %v has already been created", hamsg.InRed(name))
+			UpdateSetting(d)
 			continue
 		}
 		primaryKey, err := GetPrimaryKeyField(d)
